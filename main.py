@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from llm import ask_deepseek
 
 app = FastAPI()
 
@@ -14,15 +15,18 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> ChatResponse:
+def chat(request: ChatRequest):
     message = request.message.strip()
     if not message:
         raise HTTPException(
             status_code=400,
             detail="message cannot be blank",
         )
+    
+    answer = ask_deepseek(message)
+
     return ChatResponse(
-        answer=f"{request.user_name}，收到你的消息：{message}"
+        answer=f"{request.user_name}，{answer}"
     )
 
 
