@@ -13,22 +13,35 @@ if not api_key:
 client = OpenAI(
     api_key=api_key,
     base_url="https://api.deepseek.com",
+    timeout=15.0,
+    max_retries=1,
 )
 
 
-def ask_deepseek(message: str) -> str:
+def ask_deepseek(
+    message: str,
+    history: list[dict[str, str]] | None = None,
+) -> str:
+    messages = [
+        {
+            "role": "system",
+            "content": "你是一名面向初学者的中文AI老师。回答时先给结论，再用一个生活化例子解释，控制在100字以内。",
+        },
+    ]
+
+    if history:
+        messages.extend(history)
+
+    messages.append(
+        {
+            "role": "user",
+            "content": message,
+        }
+    )
+
     response = client.chat.completions.create(
         model="deepseek-v4-flash",
-        messages=[
-            {
-                "role": "system",
-                "content": "你是一名回答简洁、准确的中文助手。",
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ],
+        messages=messages,
         stream=False,
     )
 

@@ -59,3 +59,13 @@ curl -i http://127.0.0.1:8000/greet/XL
 ```bash
 curl -i "http://127.0.0.1:8000/greet/XL?language=en"
 ```
+
+## Multi-turn Chat
+
+`history` 用于把之前的对话一起发送给模型，最多包含 10 条消息。每条消息的 `role` 只能是 `user` 或 `assistant`。
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"我最喜欢的数字是什么？","user_name":"Joe","history":[{"role":"user","content":"我最喜欢的数字是17"},{"role":"assistant","content":"好的，我记住了"}]}'
+```
