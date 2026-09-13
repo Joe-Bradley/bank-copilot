@@ -1,10 +1,11 @@
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from openai import APIError
 from pydantic import BaseModel, Field
 
-from llm import ask_deepseek
+from llm import ask_deepseek, stream_deepseek
 
 app = FastAPI()
 
@@ -32,7 +33,7 @@ def chat(request: ChatRequest):
             status_code=400,
             detail="message cannot be blank",
         )
-    
+
     history = [item.model_dump() for item in request.history]
 
     try:
@@ -45,6 +46,32 @@ def chat(request: ChatRequest):
 
     return ChatResponse(
         answer=f"{request.user_name}，{answer}"
+    )
+
+
+@app.post("/chat/stream")
+def chat_stream(request: ChatRequest):
+    message = request.message.strip()
+
+    if not message:
+        raise HTTPException(
+            status_code=400,
+            detail="message cannot be blank",
+        )
+
+    history = [item.model_dump() for item in request.history]
+
+    def response_stream():
+        yield f"{request.user_name}，"
+        try:
+            yield from stream_deepseek(message, history)
+        except APIError as exc:
+            print(f"stream error = {exc!r}", flush=True)
+            yield "\n[大模型服务暂时不可用]"
+
+    return StreamingResponse(
+        response_stream(),
+        media_type="text/plain",
     )
 
 
