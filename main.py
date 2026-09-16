@@ -1,13 +1,30 @@
+from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from openai import APIError
 from pydantic import BaseModel, Field
 
 from llm import ask_deepseek, stream_deepseek
 
+BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI()
+
+
+app.mount(
+    "/static",
+    StaticFiles(directory=BASE_DIR / "static"),
+    name="static",
+)
+
+
+@app.get("/")
+def home():
+    return FileResponse(
+        BASE_DIR / "static" / "index.html"
+    )
 
 
 class ChatResponse(BaseModel):
@@ -62,7 +79,6 @@ def chat_stream(request: ChatRequest):
     history = [item.model_dump() for item in request.history]
 
     def response_stream():
-        yield f"{request.user_name}，"
         try:
             yield from stream_deepseek(message, history)
         except APIError as exc:

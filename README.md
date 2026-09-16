@@ -1,4 +1,54 @@
-# Curl Test Cases
+# Bank Copilot
+
+一个使用 FastAPI、DeepSeek 和原生 JavaScript 构建的流式 AI 聊天应用。
+
+## Features
+
+- FastAPI 聊天接口
+- DeepSeek 流式回答
+- 最多 10 条多轮对话历史
+- 浏览器 `localStorage` 持久化
+- 清空对话
+- 桌面和手机响应式布局
+- 上游模型错误处理
+
+## Run Locally
+
+启动服务：
+
+```bash
+uv run uvicorn main:app --reload
+```
+
+打开浏览器：
+
+```text
+http://127.0.0.1:8000/
+```
+
+项目需要在 `.env` 中配置 `DEEPSEEK_API_KEY`。不要提交 `.env` 或公开密钥。
+
+## Project Structure
+
+```text
+bank-copilot/
+├── main.py              # FastAPI 路由和 HTTP 响应
+├── llm.py               # DeepSeek 模型调用
+├── static/
+│   ├── index.html       # 页面结构
+│   ├── app.js           # 聊天交互和历史记录
+│   └── style.css        # 页面样式
+├── pyproject.toml
+└── README.md
+```
+
+## Browser Chat
+
+浏览器使用 `POST /chat/stream` 获取流式回答。
+
+对话历史最多保留 10 条，并存储在浏览器的 `bankCopilotHistory` 中。点击“清空对话”可以删除本地历史。
+
+## Curl Test Cases
 
 运行测试前，先启动服务：
 

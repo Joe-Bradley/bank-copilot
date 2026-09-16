@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Bank Copilot</title>
+    <link
+        rel="stylesheet"
+        href="/static/style.css?v=20260916-3"
+    >
+</head>
+
+<body>
+    <main class="chat-app">
+        <header>
+            <h1>Bank Copilot</h1>
+            <p>你的 AI 助手</p>
+            <button
+                id="clear-history"
+                type="button"
+            >
+                清空对话
+            </button>
+        </header>
+
+        <section
+            id="chat-messages"
+            aria-live="polite"
+        >
+            <p class="message assistant-message">
+                你好，请问有什么可以帮助你？
+            </p>
+        </section>
+
+        <form id="chat-form">
+            <input
+                id="message-input"
+                type="text"
+                placeholder="请输入问题"
+                maxlength="500"
+                required
+                autocomplete="off"
+            >
+            <button type="submit">发送</button>
+        </form>
+    </main>
+
+    <script src="/static/app.js?v=20260916-5"></script>
+</body>
+</html>
