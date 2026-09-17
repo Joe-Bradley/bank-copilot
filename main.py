@@ -8,6 +8,7 @@ from openai import APIError
 from pydantic import BaseModel, Field
 
 from llm import ask_deepseek, stream_deepseek
+from retrieval import retrieve_product_context
 
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI()
@@ -45,16 +46,22 @@ class ChatRequest(BaseModel):
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
     message = request.message.strip()
+
     if not message:
         raise HTTPException(
             status_code=400,
             detail="message cannot be blank",
         )
 
+    context = retrieve_product_context(message)
     history = [item.model_dump() for item in request.history]
 
     try:
-        answer = ask_deepseek(message, history)
+        answer = ask_deepseek(
+            message,
+            history,
+            context,
+        )
     except APIError as exc:
         raise HTTPException(
             status_code=502,
@@ -76,11 +83,16 @@ def chat_stream(request: ChatRequest):
             detail="message cannot be blank",
         )
 
+    context = retrieve_product_context(message)
     history = [item.model_dump() for item in request.history]
 
     def response_stream():
         try:
-            yield from stream_deepseek(message, history)
+            yield from stream_deepseek(
+                message,
+                history,
+                context,
+            )
         except APIError as exc:
             print(f"stream error = {exc!r}", flush=True)
             yield "\n[大模型服务暂时不可用]"
