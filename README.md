@@ -4,13 +4,17 @@
 
 ## Features
 
-- FastAPI 聊天接口
+- FastAPI 普通与流式聊天接口
 - DeepSeek 流式回答
+- Markdown 产品知识库
+- 产品名称及别名关键词检索
+- 多产品对比检索
 - 最多 10 条多轮对话历史
 - 浏览器 `localStorage` 持久化
 - 清空对话
 - 桌面和手机响应式布局
 - 上游模型错误处理
+- pytest 自动化测试
 
 ## Run Locally
 
@@ -32,8 +36,14 @@ http://127.0.0.1:8000/
 
 ```text
 bank-copilot/
+├── knowledge/
+│   └── products.md       # 教学用产品知识库
+├── tests/
+│   ├── test_main.py      # 普通与流式路由集成测试
+│   └── test_retrieval.py # 检索单元测试
 ├── main.py              # FastAPI 路由和 HTTP 响应
 ├── llm.py               # DeepSeek 模型调用
+├── retrieval.py         # 产品关键词检索
 ├── static/
 │   ├── index.html       # 页面结构
 │   ├── app.js           # 聊天交互和历史记录
@@ -47,6 +57,16 @@ bank-copilot/
 浏览器使用 `POST /chat/stream` 获取流式回答。
 
 对话历史最多保留 10 条，并存储在浏览器的 `bankCopilotHistory` 中。点击“清空对话”可以删除本地历史。
+
+## Tests
+
+运行全部自动化测试：
+
+```bash
+uv run python -m pytest -v
+```
+
+测试使用假模型函数验证普通和流式路由，不会调用真实 DeepSeek，也不会消耗 API。
 
 ## Curl Test Cases
 

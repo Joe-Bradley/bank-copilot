@@ -23,9 +23,7 @@ app.mount(
 
 @app.get("/")
 def home():
-    return FileResponse(
-        BASE_DIR / "static" / "index.html"
-    )
+    return FileResponse(BASE_DIR / "static" / "index.html")
 
 
 class ChatResponse(BaseModel):
@@ -68,9 +66,7 @@ def chat(request: ChatRequest):
             detail="大模型服务暂时不可用",
         ) from exc
 
-    return ChatResponse(
-        answer=f"{request.user_name}，{answer}"
-    )
+    return ChatResponse(answer=f"{request.user_name}，{answer}")
 
 
 @app.post("/chat/stream")

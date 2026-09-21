@@ -9,3 +9,14 @@ dependencies = [
     "python-dotenv>=1.2.3",
     "uvicorn>=0.52.4",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # Starlette PR #3498 发布后删除此项。
+    'ignore:The anyio\.abc\.BlockingPortal alias is deprecated, use anyio\.from_thread\.BlockingPortal instead\.:DeprecationWarning:starlette\.testclient',
+]

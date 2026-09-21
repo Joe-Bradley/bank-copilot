@@ -74,7 +74,7 @@ def ask_deepseek(
     )
 
     response = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="deepseek-flash",
         messages=messages,
         stream=False,
     )
@@ -99,7 +99,7 @@ def stream_deepseek(
     )
 
     response = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="deepseek-flash",
         messages=messages,
         stream=True,
     )
