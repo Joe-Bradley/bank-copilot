@@ -93,3 +93,46 @@ def test_chat_stream_passes_context_to_llm(
     assert "100元" in captured["context"]
     assert "稳享养老存款" in captured["context"]
     assert "10,000元" in captured["context"]
+
+
+def test_chat_follow_up_passes_history_context_to_llm(
+    monkeypatch,
+):
+    captured = {}
+
+    def fake_ask_deepseek(
+        message,
+        history,
+        context,
+    ):
+        captured["history"] = history
+        captured["context"] = context
+        return "可以通过手机银行或营业网点办理。"
+
+    monkeypatch.setattr(
+        main,
+        "ask_deepseek",
+        fake_ask_deepseek,
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "message": "那在哪里办理？",
+            "history": [
+                {
+                    "role": "user",
+                    "content": "星河成长账户最低起存金额是多少？",
+                },
+                {
+                    "role": "assistant",
+                    "content": "最低起存金额是100元。",
+                },
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert captured["context"] is not None
+    assert "星河成长账户" in captured["context"]
+    assert "办理渠道：手机银行、营业网点" in captured["context"]

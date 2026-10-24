@@ -38,3 +38,25 @@ def test_product_aliases_do_not_duplicate_context():
 
     assert context is not None
     assert context.count("## 星河成长账户") == 1
+
+
+def test_follow_up_uses_product_from_user_history():
+    history = [
+        {
+            "role": "user",
+            "content": "星河成长账户最低起存金额是多少？",
+        },
+        {
+            "role": "assistant",
+            "content": "最低起存金额是100元。",
+        },
+    ]
+
+    context = retrieve_product_context(
+        "那在哪里办理？",
+        history=history,
+    )
+
+    assert context is not None
+    assert "星河成长账户" in context
+    assert "办理渠道：手机银行、营业网点" in context

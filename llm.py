@@ -92,6 +92,8 @@ def stream_deepseek(
     history: list[dict[str, str]] | None = None,
     context: str | None = None,
 ):
+
+    # message包含用户当前输入的问题，history包含用户和助手的历史对话，context包含匹配的产品知识内容。
     messages = build_messages(
         message,
         history,
@@ -101,6 +103,7 @@ def stream_deepseek(
     response = client.chat.completions.create(
         model="deepseek-flash",
         messages=messages,
+        # 和ask_deepseek函数不同，stream_deepseek函数的stream参数为True，表示返回流式响应，用yield逐个返回响应内容，而不是一次性返回完整的响应内容。
         stream=True,
     )
 
