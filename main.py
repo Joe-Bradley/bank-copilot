@@ -10,7 +10,6 @@ from pydantic import BaseModel, Field
 from llm import ask_deepseek, stream_deepseek
 from retrieval import retrieve_product_context
 
-
 #在找到 main.py 所在的文件夹，并把它保存为 BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent
 
