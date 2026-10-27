@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 import main
 
-
 client = TestClient(main.app)
 
 
@@ -136,3 +135,34 @@ def test_chat_follow_up_passes_history_context_to_llm(
     assert captured["context"] is not None
     assert "星河成长账户" in captured["context"]
     assert "办理渠道：手机银行、营业网点" in captured["context"]
+
+
+def test_chat_stream_follow_up_uses_history_context(monkeypatch):
+    captured = {}
+
+    def fake_stream_deepseek(message, history, context):
+        captured["history"] = history
+        captured["context"] = context
+        yield "测试回答"
+
+    # monkeypatch是pytest提供的一个fixture，用于在测试中临时修改对象的属性或方法
+    monkeypatch.setattr(main, "stream_deepseek", fake_stream_deepseek)
+
+    response = client.post(
+        "/chat/stream",
+        json={
+            "message": "那在哪里办理？",
+            "history": [
+                {
+                    "role": "user",
+                    "content": "星河成长账户最低起存金额是多少？",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.text == "测试回答"
+    assert captured["history"][0]["role"] == "user"
+    assert captured["context"] is not None
+    assert "星河成长账户" in captured["context"]

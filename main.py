@@ -111,8 +111,8 @@ def chat_stream(request: ChatRequest):
             detail="message cannot be blank",
         )
 
-    context = retrieve_product_context(message)
     history = [item.model_dump() for item in request.history]
+    context = retrieve_product_context(message, history=history)
 
     def response_stream():
         try:
