@@ -166,3 +166,35 @@ def test_chat_stream_follow_up_uses_history_context(monkeypatch):
     assert captured["history"][0]["role"] == "user"
     assert captured["context"] is not None
     assert "星河成长账户" in captured["context"]
+
+
+from llm import build_messages
+
+
+def test_build_messages_keeps_context_history_and_question():
+    history = [
+        {"role": "user", "content": "星河成长账户是什么？"},
+        {"role": "assistant", "content": "这是一个成长账户。"},
+    ]
+    context = "## 星河成长账户\n办理渠道：手机银行、营业网点"
+
+    messages = build_messages(
+        "那在哪里办理？",
+        history=history,
+        context=context,
+    )
+
+    assert "办理渠道：手机银行、营业网点" in messages[0]["content"]
+    assert messages[1:3] == history
+    assert messages[-1] == {"role": "user", "content": "那在哪里办理？"}
+
+def test_build_messages_without_context():
+    messages = build_messages("月亮账户怎么开户？")
+
+    assert len(messages) == 2
+    assert messages[0]["role"] == "system"
+    assert "没有检索到匹配的产品资料" in messages[0]["content"]
+    assert messages[1] == {
+        "role": "user",
+        "content": "月亮账户怎么开户？",
+    }

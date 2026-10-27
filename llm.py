@@ -18,6 +18,7 @@ client = OpenAI(
 )
 
 
+#输出的是messages列表，包含系统消息、历史消息和用户当前输入的消息，数据结构是一个字典列表，每个字典有role和content两个键，role表示消息的角色，可以是"system"、"user"或"assistant"，content表示消息的内容，是一个字符串。
 def build_messages(
     message: str,
     history: list[dict[str, str]] | None = None,
