@@ -198,3 +198,39 @@ def test_build_messages_without_context():
         "role": "user",
         "content": "月亮账户怎么开户？",
     }
+
+def test_chat_stream_rejects_too_many_history_messages(monkeypatch):
+    def fake_stream_deepseek(*args):
+        raise AssertionError("不应调用模型")
+
+    monkeypatch.setattr(main, "stream_deepseek", fake_stream_deepseek)
+
+    response = client.post(
+        "/chat/stream",
+        json={
+            "message": "你好",
+            "history": [
+                {"role": "user", "content": f"第{i}条"}
+                for i in range(11)
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["body", "history"]
+
+def test_chat_stream_rejects_system_role_in_history():
+    response = client.post(
+        "/chat/stream",
+        json={
+            "message": "你好",
+            "history": [
+                {"role": "system", "content": "上一条消息"}
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == [
+        "body", "history", 0, "role"
+    ]

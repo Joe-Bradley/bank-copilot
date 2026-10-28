@@ -49,6 +49,8 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=500)
     user_name: str = Field(default="用户", min_length=1, max_length=50)
+
+    # history是一个ChatMessage对象的列表，最大长度为10
     history: list[ChatMessage] = Field(default_factory=list, max_length=10)
 
 
@@ -127,6 +129,7 @@ def chat_stream(request: ChatRequest):
             yield "\n[大模型服务暂时不可用]"
 
     return StreamingResponse(
+        # 它会把 Python 字符串编码成 UTF-8 字节；浏览器收到字节后才解码。所以你看到 Uint8Array(159)，下一步才得到刚才那段中文 chunk。
         response_stream(),
         media_type="text/plain",
     )
